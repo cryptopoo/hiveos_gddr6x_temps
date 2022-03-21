@@ -1,0 +1,1 @@
+# hiveos_gddr6x_temps

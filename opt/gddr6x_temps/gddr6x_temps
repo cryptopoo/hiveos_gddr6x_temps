@@ -31,7 +31,7 @@ function process_log() {
     if [ -f "${RUNNING_FLAG}" ] && [ -f "$log_file" ]; then
         local stats=$(tail -n 100 "${log_file}" | sed -ne "${regexp}")
         for x in $stats; do
-            local k=$(echo $nvidia_indexes_array | jq -c ".[index(${x%%,*}+1)]")
+            local k=$(echo $nvidia_indexes_array | jq -c ".[index(${x%%,*})]")
             local v=${x#*,}
             cat <<< $(jq -c ".[$k] = \"$v\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
         done

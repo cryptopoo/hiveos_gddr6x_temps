@@ -22,6 +22,8 @@ function init() {
     if [ "${nvidia_indexes_array}" = "" ] || [ "$nvidia_indexes_array" = "[]" ]; then
         exit 1
     fi
+
+    rm -f "${GDDR6X_TEMP_FILE}"
 }
 
 function process_log() {
@@ -62,7 +64,7 @@ function loop() {
 
         patch_stats
 
-        cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else .temp end' > ${GDDR6X_TEMP_FILE}
+        cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
         most_recent_log_file=$(ls -t ${GMINER_LOG_FILE} ${TREX_LOG_FILE} 2>/dev/null | head -1)
 
         if [ "${most_recent_log_file}" = "${GMINER_LOG_FILE}" ]; then

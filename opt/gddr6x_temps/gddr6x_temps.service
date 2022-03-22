@@ -1,0 +1,12 @@
+[Unit]
+Description=Collect GDDR6X statistics from miners and report to HiveOS
+After=network-online.target multi-user.target
+Requires=network-online.target
+
+[Service]
+Restart=always
+RestartSec=10
+ExecStart=/bin/bash /opt/gddr6x_temps/gddr6x_temps
+
+[Install]
+WantedBy=multi-user.target

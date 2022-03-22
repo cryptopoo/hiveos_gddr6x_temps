@@ -16,12 +16,7 @@ What it really does, is parsing the logs from the miners written above and patch
 # Installation
 Simply open a shell on your HiveOS shell and run (copy paste the whole thing and press ENTER):
 ```
-cd /tmp && \
-rm -rf hiveos_gddr6x_temps-main && \
-wget https://github.com/cryptopoo/hiveos_gddr6x_temps/archive/refs/heads/main.zip && \
-unzip main.zip && \
-cd hiveos_gddr6x_temps-main && \
-bash install.sh
+curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install.sh | bash
 ```
 
 # In case of problems

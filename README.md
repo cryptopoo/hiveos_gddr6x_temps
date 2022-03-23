@@ -25,12 +25,7 @@ What if after installing this script you start seeing aliens coming all the way 
 First, you can uninstall the script with (copy paste the whole thing and press ENTER):
 
 ```
-cd /tmp && \
-rm -rf hiveos_gddr6x_temps-main && \
-wget https://github.com/cryptopoo/hiveos_gddr6x_temps/archive/refs/heads/main.zip && \
-unzip main.zip && \
-cd hiveos_gddr6x_temps-main && \
-bash uninstall.sh
+curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-uninstall.sh | bash
 ```
 
 Then go seek for help.

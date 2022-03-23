@@ -73,11 +73,12 @@ function loop() {
         patch_stats
 
         cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
-        most_recent_log_file=$(ls -t ${GMINER_LOG_FILE} ${TREX_LOG_FILE} 2>/dev/null | head -1)
 
-        if [ "${most_recent_log_file}" = "${GMINER_LOG_FILE}" ]; then
+        if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print)" == "${GMINER_LOG_FILE}" ]; then
             process_gminer_log
-        elif [ "${most_recent_log_file}" = "${TREX_LOG_FILE}" ]; then
+        fi
+
+        if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print)" == "${TREX_LOG_FILE}" ]; then
             process_trex_log
         fi
 

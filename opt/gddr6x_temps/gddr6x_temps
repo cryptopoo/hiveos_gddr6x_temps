@@ -35,7 +35,9 @@ function process_log() {
         for x in $stats; do
             local k=$(echo $nvidia_indexes_array | jq -c ".[${x%%,*}]")
             local v=${x#*,}
-            cat <<< $(jq -c ".[$k] = \"$v\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
+            if [ "$k" != "null" ] && [ -n "$k" ]; then
+                cat <<< $(jq -c ".[$k] = \"$v\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
+            fi
         done
     else
         if [ -f "${GDDR6X_TEMP_FILE}" ]; then

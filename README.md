@@ -14,10 +14,12 @@ Please consider this a simple add-on on top of HiveOS.
 What it really does, is parsing the logs from the miners written above and patching the GPU stats json file that HiveOS collects periodically with the memory temperatures. When GPU data will be reported to HiveOS, it will have also memory temperatures added to it.
 
 # Installation
-Simply open a shell on your HiveOS shell and run (copy paste the whole thing and press ENTER):
+Simply open a shell on your HiveOS installation or click "Run command" on top and run (copy paste the whole thing and press ENTER):
 ```
 curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install.sh | bash
 ```
+
+![image](https://user-images.githubusercontent.com/102094145/159818529-1dadaa6a-542d-4251-9cf4-7bdbe7b9d9a9.png)
 
 # In case of problems
 What if after installing this script you start seeing aliens coming all the way down to mother Earth to rape your wife and steal your children?

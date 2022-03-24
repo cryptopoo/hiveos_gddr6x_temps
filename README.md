@@ -9,6 +9,14 @@ and adds them to the normal GPU statistics collected by HiveOS.
 
 This script doesn't alter any HiveOS core files, so it's rather safe to use.
 
+# Supported GPUs
+All GDDR6X NVIDIA GPUs are supported as well as some GDDR6 (!):
+- RTX 3090
+- RTX 3080 Ti
+- RTX 3080
+- RTX 3070 Ti
+- RTX 2080 Ti (GDDR6)
+
 # This is experimental
 Please consider this a simple add-on on top of HiveOS.
 What it really does, is parsing the logs from the miners written above and patching the GPU stats json file that HiveOS collects periodically with the memory temperatures. When GPU data will be reported to HiveOS, it will have also memory temperatures added to it.

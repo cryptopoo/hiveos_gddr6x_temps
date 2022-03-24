@@ -61,16 +61,20 @@ function process_trex_log() {
 }
 
 function patch_stats() {
-    if [ -f "${GDDR6X_TEMP_FILE}" ]; then
-        cat <<< $(jq -c ".mtemp = $(cat "${GDDR6X_TEMP_FILE}" | tr '"' '\"')" ${GPU_STATS_JSON}) > ${GPU_STATS_JSON}
+    if [ -s "${GDDR6X_TEMP_FILE}" ]; then
+        ORIG_GPU_STATS=$(cat ${GPU_STATS_JSON})
+        if [ "${ORIG_GPU_STATS}" != "" ]; then
+            NEW_TEMPS=$(cat ${GDDR6X_TEMP_FILE} | tr '"' '\"')
+            if [ "${NEW_TEMPS}" != "" ]; then
+                echo ${ORIG_GPU_STATS} | jq -c ".mtemp = ${NEW_TEMPS}" > ${GPU_STATS_TEMP_FILE} && mv ${GPU_STATS_TEMP_FILE} ${GPU_STATS_JSON}
+            fi
+        fi
     fi
 }
 
 function loop() {
     while [[ TRUE ]]; do
         inotifywait -qq "$GPU_STATS_JSON"
-
-        patch_stats
 
         cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
 

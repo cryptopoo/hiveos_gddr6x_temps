@@ -48,7 +48,7 @@ Then go seek for help.
 
 # Make autofan work with NVIDIA memory temps
 
-In order for autofan to work with NVIDIA cards memory temperatures, you will need to apply a small patch to the `autofan` HiveOS binary.  
+In order for autofan to work with NVIDIA cards memory temperatures, you will need to apply a small patch to the `autofan` HiveOS script.  
 Since this is a change to a core file of HiveOS, this hasn't been included in the normal `quick-install.sh` script and you will have to apply it manually after installing this add-on.
 The patch is very simple, it passes memory temperatures to the function responsible for adjusting fan speed, just like it does for AMD cards, nothing different than that. There is no real alteration of the behavior of how the `autofan` module works per-se, so you can expect it to work as usual.
 Please make sure to run on latest version of HiveOS before applying the patch and bear in mind that updating HiveOS might revert this patch (so you may need to apply it again):

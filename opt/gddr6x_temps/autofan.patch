@@ -1,0 +1,27 @@
+--- /hive/sbin/autofan	2022-03-26 11:53:48.456305401 +0200
++++ /hive/sbin/autofan	2022-03-26 11:55:54.394848717 +0200
+@@ -435,6 +435,8 @@
+ 		local card_bus_id=${card_bus_ids_array[index]}
+ 		local brand="Nvidia"
+ 		local name="${card_names_array[index]}"
++		local mem_temp=${memtemp_array[index]}
++		local mem_temp_previous=${memtemp_array_previous[index]}
+
+ 		local fan_count=${fan_count_array[index]}
+ 		[[ -z $fan_count || $fan_count == "null" ]] && fan_count=1
+@@ -442,13 +444,14 @@
+ 		#echo "get_fan_speed \"$gpu_temperature\" \"$gpu_temperature_previous\" \"$gpu_fan_speed\" \"$gpu_fan_speed_previous\" \"$card_bus_id\" $index $brand"
+
+ 		check_gpu_params "$gpu_temperature"
++		[[ ! -z "$mem_temp" ]] && check_gpu_params "$mem_temp"
+
+ 		[[ -z "${gpu_fan_speed##*[!0-9]*}" ]] && gpu_fan_speed=$gpu_fan_speed_previous
+ 		[[ $gpu_fan_speed_previous -eq 0 ]] && gpu_fan_speed_previous=$gpu_fan_speed
+
+ 		#skip if no temp
+ 		if [ ! -z "${gpu_temperature##*[!0-9]*}" ]; then
+-			get_fan_speed "$gpu_temperature" "$gpu_temperature_previous" "$gpu_fan_speed_previous" "$card_bus_id" $index "$brand" "$name"
++			get_fan_speed "$gpu_temperature" "$gpu_temperature_previous" "$gpu_fan_speed_previous" "$card_bus_id" $index "$brand" "$name" "$mem_temp" "$mem_temp_previous"
+ 			#do not set fan_speed if not changed
+ 			[[ $target_fan_speed -ne $gpu_fan_speed_previous || $gpu_fan_speed -lt $(( target_fan_speed - 1 )) || $gpu_fan_speed -gt $(( target_fan_speed + 1 )) ]] &&
+ 				args+=" -a [gpu:$gpu_idx]/GPUFanControlState=1"

@@ -16,6 +16,7 @@ All GDDR6X NVIDIA GPUs are supported as well as some GDDR6 (!):
 - RTX 3080
 - RTX 3070 Ti
 - RTX 2080 Ti (GDDR6)
+- RTX 2080
 
 # This is experimental
 Please consider this a simple add-on on top of HiveOS.

@@ -16,6 +16,19 @@ systemctl restart gddr6x_temps.service
 echo "=========================================================="
 echo "|             Installed and activated!                   |"
 echo "|========================================================|"
-echo "|       If this works for you consider donating at       |"
-echo "|       0x480A5cF1933160D2ef7acf259f631e8d656ceD29       |"
+echo "|       If this works for you consider donating at:      |"
+echo "|                                                        |"
+echo "|    BTC    bc1q0xrs5cq7zwrnvz7dkzvgrzya48se6zgkt90sln   |"
+echo "|    ETH    0x9b7A231147c8294cC558F080B26F948Bfd523A79   |"
+echo "|    ETC    0xe9c8F439196fBA21f383AE69e8E4330B1493C335   |"
+echo "|    BNB    0x9b7A231147c8294cC558F080B26F948Bfd523A79   |"
+echo "|    RVN    RB2JTzcSxfZtWcQhYMCgad2M1T8Xi7dgPX           |"
 echo "=========================================================="
+
+
+
+BTC    bc1q0xrs5cq7zwrnvz7dkzvgrzya48se6zgkt90sln
+ETH    0x9b7A231147c8294cC558F080B26F948Bfd523A79
+ETC    0xe9c8F439196fBA21f383AE69e8E4330B1493C335
+BNB    0x9b7A231147c8294cC558F080B26F948Bfd523A79
+RVN    RB2JTzcSxfZtWcQhYMCgad2M1T8Xi7dgPX

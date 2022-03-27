@@ -62,10 +62,27 @@ curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/patch-
 The patch will be reverted if you uninstall this module.
 
 # Consider donating to support my work
-Do you like how this script is so minimally invasive in respect to HiveOS core files and the functionality it provides? **Please**, consider donating a small amount to thank me for my time! It will be very much appreciated!
+Do you like how this script is so minimally invasive in respect to HiveOS core files and the functionality it provides?  
+**Please**, consider donating a small amount to thank me for my time! It will be very much appreciated!
 
-Donations are accepted as BNB / ETH or any other coin on the following address:
+Donations are accepted at the following addresses, in order of preference:
 
-```0x480A5cF1933160D2ef7acf259f631e8d656ceD29```
+```
+BTC    bc1q0xrs5cq7zwrnvz7dkzvgrzya48se6zgkt90sln
+ETH    0x9b7A231147c8294cC558F080B26F948Bfd523A79
+ETC    0xe9c8F439196fBA21f383AE69e8E4330B1493C335
+BNB    0x9b7A231147c8294cC558F080B26F948Bfd523A79
+RVN    RB2JTzcSxfZtWcQhYMCgad2M1T8Xi7dgPX
+ERGO   9h1DrdXqQP3Aq3rdAPtLH4n5g9mQrLL2W3pYe152CkqPKbimu6w
+MATIC  0x9b7A231147c8294cC558F080B26F948Bfd523A79
 
-Thank you!
+ZIL    zil13ctkfhgx5tdp48sewtmddtujfgsl87cqz38jug
+FLUX   t1HyF9wDivycxNLNRzs9rRoEDwJ6hogDjpd
+TRX    TFRKg3FTRbcR79CnpahMzf5yJu1dU4FQGn
+FTM    0x9b7A231147c8294cC558F080B26F948Bfd523A79
+AE     ak_2ekWFyFHPazAxMHbdGrdd3emVHzDo9iprwAMCw1aaTYg6YZAn
+FIRO   aBYiGagsNdZE71bb2uAKKGyixBu6195uE3
+DASH   XuuZxRNiK9BzhCDHRci8XBCoiz5GN9xzig
+```
+
+! :heart: Thank you :heart: !

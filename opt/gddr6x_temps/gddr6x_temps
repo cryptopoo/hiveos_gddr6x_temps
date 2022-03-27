@@ -17,6 +17,12 @@ TREX_REGEXP="s/GPU #[ ]*\([0-9]\{1,2\}\): RTX \(3080\|3090\|3070 Ti\|2080\|A2000
 GMINER_LOG_FILE="/var/log/miner/gminer/gminer.log"
 GMINER_REGEXP="s/|[ ]*\([0-9]\{1,2\}\)[ ]*\(3080\|3090\|3070Ti\|2080\|A2000\|A4000\|A4500\|A5000\).*[0-9]\{1,3\}\/\([0-9]\{1,3\}\)[ ]*[0-9]\{1,3\}[ ]*%.*/\1,\3/p"
 
+# LOLMINER
+# Example: ^[[0m^[[96mGPU 0 ^[[0m^[[36m  132.2G^[[0m^[[36m   4.061^[[0m^[[96m   276.7^[[0m^[[96m  1245^[[0m^[[96m  10601^[[0m^[[96m    70^[[0m^[[96m   N/A^[[0m^[[96m   104^[[0m^[[96m   58^[[0m^[[96m   FHR^[[0m^[[96m
+#
+LOLMINER_LOG_FILE="/var/log/miner/lolminer/lolminer.log"
+LOLMINER_REGEXP=""
+
 function init() {
     nvidia_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '[ .brand | to_entries[] | select(.value == "nvidia") | .key ]')
     gpus_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '[ .brand | to_entries[] | select(.value != "cpu") | .key ]')
@@ -27,16 +33,41 @@ function init() {
     rm -f "${GDDR6X_TEMP_FILE}"
 }
 
+function strip_color() {
+    local string=$@
+    echo $string | sed -r 's/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g'
+}
+
+function index_of() {
+    local needle="$1"
+    local haystack=("${@:2}")
+    for key in "${!haystack[@]}"; do
+        [[ $(strip_color "${haystack[$key]}") == "${needle}" ]] && echo $key;
+    done;
+}
+
 function process_log() {
     local log_file=$1
     local regexp=$2
 
     if [ -f "${RUNNING_FLAG}" ] && [ -f "$log_file" ]; then
-        local stats=$(tail -n 100 "${log_file}" | sed -ne "${regexp}")
+        if [ "$log_file" == "${LOLMINER_LOG_FILE}" ]; then
+            local header=($(tail -n 100 "${log_file}" | grep 'CCLK.*MCLK' | head -1))
+            local index=$(index_of "Mem" ${header[@]})
+            if [ -n "${index}" ]; then
+                index=$(($index + 1 + 1))
+                local stats=$(strip_color $(tail -n 100 "${log_file}" | grep 'CCLK.*MCLK' -A20 | tail -n20 | grep '^.*GPU [0-9]* ' | awk '{print $2","$'${index}'}'))
+            else
+                return 1
+            fi
+        else
+            local stats=$(tail -n 100 "${log_file}" | sed -ne "${regexp}")
+        fi
+
         for x in $stats; do
-            local array=$nvidia_indexes_array
-            if [ "$log_file" == "${GMINER_LOG_FILE}" ]; then
-                array=$gpus_indexes_array
+            local array=$gpus_indexes_array
+            if [ "$log_file" == "${TREX_LOG_FILE}" ]; then
+                array=$nvidia_indexes_array
             fi
 
             local k=$(echo $array | jq -c ".[${x%%,*}]")
@@ -45,10 +76,14 @@ function process_log() {
                 cat <<< $(jq -c ".[$k] = \"$v\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
             fi
         done
+
+        return 0
     else
         if [ -f "${GDDR6X_TEMP_FILE}" ]; then
             rm -f "${GDDR6X_TEMP_FILE}"
         fi
+
+        return 1
     fi
 }
 
@@ -58,6 +93,10 @@ function process_gminer_log() {
 
 function process_trex_log() {
     process_log "${TREX_LOG_FILE}" "${TREX_REGEXP}"
+}
+
+function process_lolminer_log() {
+    process_log "${LOLMINER_LOG_FILE}"
 }
 
 function patch_stats() {
@@ -78,15 +117,23 @@ function loop() {
 
         cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
 
-        if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print)" == "${GMINER_LOG_FILE}" ]; then
-            process_gminer_log
+        local do_patch=0
+
+        if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${GMINER_LOG_FILE}" ]; then
+            process_gminer_log && do_patch=1
         fi
 
-        if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print)" == "${TREX_LOG_FILE}" ]; then
-            process_trex_log
+        if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${TREX_LOG_FILE}" ]; then
+            process_trex_log && do_patch=1
         fi
 
-        patch_stats
+        if [ "$(find "${LOLMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${LOLMINER_LOG_FILE}" ]; then
+            process_lolminer_log && do_patch=1
+        fi
+
+        if [ ${do_patch} -eq 1 ]; then
+            patch_stats
+        fi
     done
 }
 

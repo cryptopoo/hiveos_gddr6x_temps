@@ -4,6 +4,7 @@ This simple script reads temperatures from NVIDIA GPUs as reported by:
 
 - t-rex v0.25.9+
 - gminer 2.88+
+- lolminer 1.47+
 
 and adds them to the normal GPU statistics collected by HiveOS.
 

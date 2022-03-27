@@ -33,13 +33,34 @@ function init() {
     rm -f "${GDDR6X_TEMP_FILE}"
 }
 
+function strip_color() {
+    local string=$1
+    echo $string | sed -r 's/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g'
+}
+
+function index_of() {
+    local needle=$1
+    local haystack=$2
+
+    for key in "${!haystack[@]}"; do
+        [ "${haystack[$key]}" == "${needle}" ] && echo $key
+    done;
+}
+
 function process_log() {
     local log_file=$1
     local regexp=$2
 
     if [ -f "${RUNNING_FLAG}" ] && [ -f "$log_file" ]; then
         if [ "$log_file" == "${LOLMINER_LOG_FILE}" ]; then
-            local stats=$(tail -n 100 "${log_file}" | grep 'Temp.*Pct' -A20 | tail -n20 | grep '^.*GPU [0-9]* ' | awk '{print $2","$10}' | sed -r 's/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g')
+            local header=($(tail -n 100 "${log_file}" | grep 'CCLK.*MCLK' | head -1))
+            local index=$(index_of "Mem" ${header[@]})
+            if [ -n "${index}" ]; then
+                index=$(($index + 1 + 1))
+                local stats=$(strip_color $(tail -n 100 "${log_file}" | grep 'CCLK.*MCLK' -A20 | tail -n20 | grep '^.*GPU [0-9]* ' | awk '{print $2","$'${index}'}'))
+            else
+                return 1
+            fi
         else
             local stats=$(tail -n 100 "${log_file}" | sed -ne "${regexp}")
         fi
@@ -56,10 +77,14 @@ function process_log() {
                 cat <<< $(jq -c ".[$k] = \"$v\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
             fi
         done
+
+        return 0
     else
         if [ -f "${GDDR6X_TEMP_FILE}" ]; then
             rm -f "${GDDR6X_TEMP_FILE}"
         fi
+
+        return 1
     fi
 }
 
@@ -93,19 +118,23 @@ function loop() {
 
         cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
 
+        local do_patch=0
+
         if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${GMINER_LOG_FILE}" ]; then
-            process_gminer_log
+            process_gminer_log && do_patch=1
         fi
 
         if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${TREX_LOG_FILE}" ]; then
-            process_trex_log
+            process_trex_log && do_patch=1
         fi
 
         if [ "$(find "${LOLMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${LOLMINER_LOG_FILE}" ]; then
-            process_lolminer_log
+            process_lolminer_log && do_patch=1
         fi
 
-        patch_stats
+        if [ ${do_patch} -eq 1 ]; then
+            patch_stats
+        fi
     done
 }
 

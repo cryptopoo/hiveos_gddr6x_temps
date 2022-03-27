@@ -117,23 +117,19 @@ function loop() {
 
         cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
 
-        local do_patch=0
-
         if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${GMINER_LOG_FILE}" ]; then
-            process_gminer_log && do_patch=1
+            process_gminer_log
         fi
 
         if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${TREX_LOG_FILE}" ]; then
-            process_trex_log && do_patch=1
+            process_trex_log
         fi
 
         if [ "$(find "${LOLMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${LOLMINER_LOG_FILE}" ]; then
-            process_lolminer_log && do_patch=1
+            process_lolminer_log
         fi
 
-        if [ ${do_patch} -eq 1 ]; then
-            patch_stats
-        fi
+        patch_stats
     done
 }
 

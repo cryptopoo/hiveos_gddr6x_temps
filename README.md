@@ -16,6 +16,7 @@ All GDDR6X NVIDIA GPUs are supported as well as some GDDR6 (!):
 - RTX 3080 Ti
 - RTX 3080
 - RTX 3070 Ti
+- RTX 3060 Ti (GDDR6)
 - RTX 2080 Ti (GDDR6)
 - RTX 2080 (GDDR6)
 - RTX A2000 (GDDR6)

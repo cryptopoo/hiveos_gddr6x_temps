@@ -40,7 +40,7 @@ Simply open a shell on your HiveOS installation or click "Run command" on top an
 curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install-stable.sh | bash
 ```
 
-![image](https://user-images.githubusercontent.com/102094145/159818529-1dadaa6a-542d-4251-9cf4-7bdbe7b9d9a9.png)
+![image](https://user-images.githubusercontent.com/102094145/160383316-79e1a60e-0299-4cfd-a7a8-d5d7b297208f.png)
 
 # Installation development version
 The development version is updated more often in order to solve bugs or add support for more miners / cards.

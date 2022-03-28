@@ -37,7 +37,7 @@ What it really does, is parsing the logs from the miners written above and patch
 Simply open a shell on your HiveOS installation or click "Run command" on top and run (copy paste the whole thing and press ENTER):
 
 ```
-curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install-stable.sh | bash
+curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install.sh | bash
 ```
 
 ![image](https://user-images.githubusercontent.com/102094145/159818529-1dadaa6a-542d-4251-9cf4-7bdbe7b9d9a9.png)

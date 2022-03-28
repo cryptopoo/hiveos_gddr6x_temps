@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-cd /tmp && \
-rm -rf hiveos_gddr6x_temps-main && \
-wget https://github.com/cryptopoo/hiveos_gddr6x_temps/archive/refs/heads/main.zip -O main.zip && \
-unzip main.zip && \
-cd hiveos_gddr6x_temps-main && \
-bash install.sh
+wget -O - "https://github.com/cryptopoo/hiveos_gddr6x_temps/archive/refs/tags/v1.0.47.tar.gz" | tar -C /tmp -xzf - && \
+cd /tmp/hiveos_gddr6x_temps-1.0.47 && \
+./install.sh

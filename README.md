@@ -40,18 +40,17 @@ Simply open a shell on your HiveOS installation or click "Run command" on top an
 curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install-stable.sh | bash
 ```
 
-![image](https://user-images.githubusercontent.com/102094145/160383316-79e1a60e-0299-4cfd-a7a8-d5d7b297208f.png)
+![image](https://user-images.githubusercontent.com/102094145/159818529-1dadaa6a-542d-4251-9cf4-7bdbe7b9d9a9.png)
 
-# Installation development version
+# Installation unstable / development version
 The development version is updated more often in order to solve bugs or add support for more miners / cards.
 Sometimes this version can be broken, so use this installation way only for testing or if you have issues with the stable version.
 
 Simply open a shell on your HiveOS installation or click "Run command" on top and run (copy paste the whole thing and press ENTER):
-```
-curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install.sh | bash
-```
 
-![image](https://user-images.githubusercontent.com/102094145/159818529-1dadaa6a-542d-4251-9cf4-7bdbe7b9d9a9.png)
+```
+curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install-unstable.sh | bash
+```
 
 # In case of problems
 What if after installing this script you start seeing aliens coming all the way down to mother Earth to rape your wife and steal your children?

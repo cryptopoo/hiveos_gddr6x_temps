@@ -23,7 +23,7 @@ GMINER_REGEXP="s/|[ ]*\([0-9]\{1,2\}\)[ ]*\(3080\|3090\|3070Ti\|3060Ti\|2080\|A2
 function init() {
     nvidia_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '[ .brand | to_entries[] | select(.value == "nvidia") | .key ]')
     gpus_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '[ .brand | to_entries[] | select(.value != "cpu") | .key ]')
-    if [ "${nvidia_indexes_array}" = "" ] || [ "$nvidia_indexes_array" = "[]" ]; then
+    if [ "${nvidia_indexes_array}" == "" ] || [ "${nvidia_indexes_array}" == "[]" ]; then
         exit 1
     fi
 
@@ -34,25 +34,25 @@ function process_stats() {
     local stats="$1"
     local log_file="$2"
 
-    local array=$gpus_indexes_array
-    if [ "$log_file" == "${TREX_LOG_FILE}" ]; then
-        array=$nvidia_indexes_array
+    local array=${gpus_indexes_array}
+    if [ "${log_file}" == "${TREX_LOG_FILE}" ]; then
+        array=${nvidia_indexes_array}
     fi
 
-    for x in $stats; do
-        local k=$(echo $array | jq -c ".[${x%%,*}]")
+    for x in ${stats}; do
+        local k=$(echo ${array} | jq -c ".[${x%%,*}]")
         local v=${x#*,}
-        if [ "$k" != "null" ] && [ -n "$k" ]; then
-            cat <<< $(jq -c ".[$k] = \"$v\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
+        if [ "${k}" != "null" ] && [ -n "${k}" ]; then
+            cat <<< $(jq -c ".[${k}] = \"${v}\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
         fi
     done
 }
 
 function process_log() {
-    local log_file=$1
-    local regexp=$2
+    local log_file="$1"
+    local regexp="$2"
 
-    if [ -f "${RUNNING_FLAG}" ] && [ -f "$log_file" ]; then
+    if [ -f "${RUNNING_FLAG}" ] && [ -f "${log_file}" ]; then
         local stats=$(tail -n 100 "${log_file}" | sed -ne "${regexp}")
 
         process_stats "${stats}" "${log_file}"
@@ -97,9 +97,9 @@ function patch_stats() {
 
 function loop() {
     while [[ TRUE ]]; do
-        inotifywait -qq "$GPU_STATS_JSON"
+        inotifywait -qq "${GPU_STATS_JSON}"
 
-        cat "$GPU_STATS_JSON" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
+        cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
 
         if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${GMINER_LOG_FILE}" ]; then
             process_gminer_log

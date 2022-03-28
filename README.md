@@ -52,7 +52,7 @@ Simply open a shell on your HiveOS installation or click "Run command" on top an
 curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install-unstable.sh | bash
 ```
 
-# In case of problems
+# In case of problems / Uninstall instructions
 What if after installing this script you start seeing aliens coming all the way down to mother Earth to rape your wife and steal your children?
 
 First, you can uninstall the script with (copy paste the whole thing and press ENTER):

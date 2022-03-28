@@ -33,7 +33,19 @@ BIOS 94.04.38.00.F0 (MSI RTX 3060 Ti 8GB Gaming X TRIO)
 Please consider this a simple add-on on top of HiveOS.
 What it really does, is parsing the logs from the miners written above and patching the GPU stats json file that HiveOS collects periodically with the memory temperatures. When GPU data will be reported to HiveOS, it will have also memory temperatures added to it.
 
-# Installation
+# Installation stable version
+Simply open a shell on your HiveOS installation or click "Run command" on top and run (copy paste the whole thing and press ENTER):
+
+```
+curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install-stable.sh | bash
+```
+
+![image](https://user-images.githubusercontent.com/102094145/159818529-1dadaa6a-542d-4251-9cf4-7bdbe7b9d9a9.png)
+
+# Installation development version
+The development version is updated more often in order to solve bugs or add support for more miners / cards.
+Sometimes this version can be broken, so use this installation way only for testing or if you have issues with the stable version.
+
 Simply open a shell on your HiveOS installation or click "Run command" on top and run (copy paste the whole thing and press ENTER):
 ```
 curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-install.sh | bash

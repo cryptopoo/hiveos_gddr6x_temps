@@ -16,18 +16,17 @@ All GDDR6X NVIDIA GPUs are supported as well as some GDDR6 (!):
 - RTX 3080 Ti
 - RTX 3080
 - RTX 3070 Ti
-- RTX 3060 Ti (GDDR6), namely:
+- RTX 3060 Ti (GDDR6), only few known models, namely:
 ```
 BIOS 94.04.38.40.17 (EVGA RTX 3060 Ti 8GB FTW3 ULTRA)
 BIOS 94.04.38.00.F0 (MSI RTX 3060 Ti 8GB Gaming X TRIO)
 ```
-- RTX 2080 Ti (GDDR6)
-- RTX 2080 (GDDR6)
+- RTX 2080 Ti (GDDR6, only few models) 
+- RTX 2080 (GDDR6, only few models)
 - RTX A2000 (GDDR6)
 - RTX A4000 (GDDR6)
 - RTX A4500 (GDDR6)
 - RTX A5000 (GDDR6)
-
 
 # This is experimental
 Please consider this a simple add-on on top of HiveOS.
@@ -41,6 +40,11 @@ curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-
 ```
 
 ![image](https://user-images.githubusercontent.com/102094145/159818529-1dadaa6a-542d-4251-9cf4-7bdbe7b9d9a9.png)
+
+Or follow the instructions by watching one of these videos:
+
+<a href="http://www.youtube.com/watch?v=e_Lqo_xFa6I"><img src="http://img.youtube.com/vi/e_Lqo_xFa6I/0.jpg" width="320"></a>
+<a href="http://www.youtube.com/watch?v=RnahyUMcZgY"><img src="http://img.youtube.com/vi/RnahyUMcZgY/0.jpg" width="320"></a>
 
 # Installation unstable / development version
 The development version is updated more often in order to solve bugs or add support for more miners / cards.
@@ -75,6 +79,13 @@ curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/patch-
 ```
 
 The patch will be reverted if you uninstall this module.
+
+# Special thanks
+Special thanks to these people that spread the word through their Youtube channels:
+
+- Rabid Miner (https://www.youtube.com/c/RabidMining)
+- ChumpChangeXD (https://www.youtube.com/c/ChumpChangeXD)
+- Juliano Caju (https://www.youtube.com/c/JulianoCaju)
 
 # Consider donating to support my work
 Do you like how this script is so minimally invasive in respect to HiveOS core files and the functionality it provides?  

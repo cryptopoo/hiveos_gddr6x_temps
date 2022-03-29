@@ -78,7 +78,7 @@ The patch is very simple, it passes memory temperatures to the function responsi
 Please make sure to run on latest version of HiveOS before applying the patch and bear in mind that updating HiveOS might revert this patch (so you may need to apply it again):
 
 ```
-curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/patch-autofan.sh | bash
+curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/patch-autofan.sh | bash; autofan restart
 ```
 
 The patch will be reverted if you uninstall this module.

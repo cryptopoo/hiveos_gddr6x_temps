@@ -97,21 +97,25 @@ function patch_stats() {
 
 function loop() {
     while [[ TRUE ]]; do
-        inotifywait -qq "${GPU_STATS_JSON}"
+        if [ -s "${GPU_STATS_JSON}" ]; then
+            inotifywait -qq -e modify -t 10 "${GPU_STATS_JSON}"
 
-        cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
+            cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
 
-        if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${GMINER_LOG_FILE}" ]; then
-            process_gminer_log
+            if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${GMINER_LOG_FILE}" ]; then
+                process_gminer_log
+            fi
+
+            if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${TREX_LOG_FILE}" ]; then
+                process_trex_log
+            fi
+
+            process_lolminer_api
+
+            patch_stats
+        else
+            sleep 1
         fi
-
-        if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${TREX_LOG_FILE}" ]; then
-            process_trex_log
-        fi
-
-        process_lolminer_api
-
-        patch_stats
     done
 }
 

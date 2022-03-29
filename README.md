@@ -43,8 +43,8 @@ curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-
 
 Or follow the instructions by watching one of these videos:
 
-<a href="http://www.youtube.com/watch?v=e_Lqo_xFa6I"><img src="http://img.youtube.com/vi/e_Lqo_xFa6I/0.jpg" width="320"></a>
-<a href="http://www.youtube.com/watch?v=RnahyUMcZgY"><img src="http://img.youtube.com/vi/RnahyUMcZgY/0.jpg" width="320"></a>
+<a target="_blank" href="http://www.youtube.com/watch?v=e_Lqo_xFa6I"><img src="http://img.youtube.com/vi/e_Lqo_xFa6I/0.jpg" width="49%"></a>
+<a target="_blank" href="http://www.youtube.com/watch?v=RnahyUMcZgY"><img src="http://img.youtube.com/vi/RnahyUMcZgY/0.jpg" width="49%"></a>
 
 # Installation unstable / development version
 The development version is updated more often in order to solve bugs or add support for more miners / cards.

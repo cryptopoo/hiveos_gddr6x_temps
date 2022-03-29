@@ -75,6 +75,9 @@ function loop() {
 
             MEMORY_TEMPS=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -cM ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end')
 
+            # Tricking the agent so it will wait a bit more for us to be done, not really 3 seconds anyway ;)
+            touch -d "3 seconds ago" ${GPU_STATS_JSON}
+
             if [ -f "${RUNNING_FLAG}" ]; then
                 process_gminer_api
                 process_trex_api

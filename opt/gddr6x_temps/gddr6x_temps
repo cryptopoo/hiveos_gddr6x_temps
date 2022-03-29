@@ -98,7 +98,7 @@ function patch_stats() {
 function loop() {
     while [[ TRUE ]]; do
         if [ -s "${GPU_STATS_JSON}" ]; then
-            inotifywait -qq -e modify -t 10 "${GPU_STATS_JSON}"
+            inotifywait -qq -e modify -t 12 "${GPU_STATS_JSON}"
 
             cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
 

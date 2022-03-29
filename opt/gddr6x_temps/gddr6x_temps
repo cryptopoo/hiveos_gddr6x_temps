@@ -1,24 +1,17 @@
 #!/usr/bin/env bash
 
-GDDR6X_TEMP_FILE="/run/hive/gddr6x_temp.json"
 GPU_STATS_JSON="/run/hive/gpu-stats.json"
-GPU_STATS_TEMP_FILE="/run/hive/gpu-stats.json.patched"
 RUNNING_FLAG="/run/hive/MINER_RUN"
+MEMORY_TEMPS="[]"
 
 # T-REX
-# Example: GPU #1: RTX 3080 - 101.56 MH/s,              [T:42/78C, P:228W, F:100%, E:505kH/W], 1/1 R:0% I:0%
-
-TREX_LOG_FILE="/var/log/miner/t-rex/t-rex.log"
-TREX_REGEXP="s/GPU #[ ]*\([0-9]\{1,2\}\): RTX \(3080\|3090\|3070 Ti\|3060 Ti\|2080\|A2000\|A4000\|A4500\|A5000\).*[ \t]*\[T:[0-9]\{1,3\}\/\([0-9]\{1,3\}\)C,.*/\1,\3/p"
+TREX_API_URL="http://127.0.0.1:4059/summary"
 
 # GMINER
-# Example: |  1  3080  45/80 100 % 1245 10601    *     N/A    * |
-
-GMINER_LOG_FILE="/var/log/miner/gminer/gminer.log"
-GMINER_REGEXP="s/|[ ]*\([0-9]\{1,2\}\)[ ]*\(3080\|3090\|3070Ti\|3060Ti\|2080\|A2000\|A4000\|A4500\|A5000\).*[0-9]\{1,3\}\/\([0-9]\{1,3\}\)[ ]*[0-9]\{1,3\}[ ]*%.*/\1,\3/p"
+GMINER_API_URL="http://127.0.0.1:42010/stat"
 
 # LOLMINER
-# Use api at 127.0.0.1:44444/summary
+LOLMINER_API_URL="http://127.0.0.1:44444/summary"
 
 function init() {
     nvidia_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '[ .brand | to_entries[] | select(.value == "nvidia") | .key ]')
@@ -26,70 +19,56 @@ function init() {
     if [ "${nvidia_indexes_array}" == "" ] || [ "${nvidia_indexes_array}" == "[]" ]; then
         exit 1
     fi
-
-    rm -f "${GDDR6X_TEMP_FILE}"
 }
 
 function process_stats() {
     local stats="$1"
-    local log_file="$2"
+    local gpus_array="$2"
 
-    local array=${gpus_indexes_array}
-    if [ "${log_file}" == "${TREX_LOG_FILE}" ]; then
-        array=${nvidia_indexes_array}
+    if [ "${stats}" == "" ] || [ "${gpus_array}" == "" ]; then
+        return 1
     fi
 
     for x in ${stats}; do
-        local k=$(echo ${array} | jq -c ".[${x%%,*}]")
+        local k=$(echo ${gpus_array} | jq -c ".[${x%%,*}]")
         local v=${x#*,}
         if [ "${k}" != "null" ] && [ -n "${k}" ]; then
-            cat <<< $(jq -c ".[${k}] = \"${v}\"" "${GDDR6X_TEMP_FILE}") > ${GDDR6X_TEMP_FILE}
+            local temp=$(jq -ceM ".[${k}] = \"${v}\"" <<< "${MEMORY_TEMPS}")
+
+            if [ $? -eq 0 ]; then
+                MEMORY_TEMPS=${temp}
+            fi
         fi
     done
+
+    return 0
 }
 
-function process_log() {
-    local log_file="$1"
-    local regexp="$2"
+function process_gminer_api() {
+    local stats=$(curl -s "${GMINER_API_URL}" | jq -c ' .devices| to_entries[] | select(.value.memory_temperature) | [(.value.gpu_id|tostring), (.value.memory_temperature|tostring)] | join(",")' | tr -d '"')
 
-    if [ -f "${RUNNING_FLAG}" ] && [ -f "${log_file}" ]; then
-        local stats=$(tail -n 100 "${log_file}" | sed -ne "${regexp}")
-
-        process_stats "${stats}" "${log_file}"
-        return 0
-    else
-        if [ -f "${GDDR6X_TEMP_FILE}" ]; then
-            rm -f "${GDDR6X_TEMP_FILE}"
-        fi
-        return 1
-    fi
+    process_stats "${stats}" "${gpus_indexes_array}"
 }
 
-function process_gminer_log() {
-    process_log "${GMINER_LOG_FILE}" "${GMINER_REGEXP}"
-}
+function process_trex_api() {
+    local stats=$(curl -s "${TREX_API_URL}" | jq -c ' .gpus| to_entries[] | select(.value.memory_temperature) | [(.value.gpu_id|tostring), (.value.memory_temperature|tostring)] | join(",")' | tr -d '"')
 
-function process_trex_log() {
-    process_log "${TREX_LOG_FILE}" "${TREX_REGEXP}"
+    process_stats "${stats}" "${nvidia_indexes_array}"
 }
 
 function process_lolminer_api() {
-    if [ -f "${RUNNING_FLAG}" ]; then
-        local stats=$(curl -s 127.0.0.1:44444/summary | jq -c ' .Workers | to_entries[] | select(.value.Mem_Temp) | [(.value.Index|tostring), (.value.Mem_Temp|tostring)] | join(",")' | tr -d '"')
+    local stats=$(curl -s "${LOLMINER_API_URL}" | jq -c ' .Workers | to_entries[] | select(.value.Mem_Temp) | [(.value.Index|tostring), (.value.Mem_Temp|tostring)] | join(",")' | tr -d '"')
 
-        if [ "${stats}" != "" ]; then
-            process_stats "${stats}"
-        fi
-    fi
+    process_stats "${stats}" "${gpus_indexes_array}"
 }
 
 function patch_stats() {
-    if [ -s "${GDDR6X_TEMP_FILE}" ]; then
+    if [ "${MEMORY_TEMPS}" != "" ] && [ "${MEMORY_TEMPS}" != "[]" ]; then
         ORIG_GPU_STATS=$(cat ${GPU_STATS_JSON})
         if [ "${ORIG_GPU_STATS}" != "" ]; then
-            NEW_TEMPS=$(cat ${GDDR6X_TEMP_FILE} | tr '"' '\"')
-            if [ "${NEW_TEMPS}" != "" ]; then
-                echo ${ORIG_GPU_STATS} | jq -c ".mtemp = ${NEW_TEMPS}" > ${GPU_STATS_TEMP_FILE} && mv ${GPU_STATS_TEMP_FILE} ${GPU_STATS_JSON}
+            local temp=$(cat "${GPU_STATS_JSON}" | jq -ceM ".mtemp = ${MEMORY_TEMPS}")
+            if [ $? -eq 0 ]; then
+                echo $temp > ${GPU_STATS_JSON}
             fi
         fi
     fi
@@ -100,19 +79,15 @@ function loop() {
         if [ -s "${GPU_STATS_JSON}" ]; then
             inotifywait -qq -e modify -t 12 "${GPU_STATS_JSON}"
 
-            cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end' > ${GDDR6X_TEMP_FILE}
+            MEMORY_TEMPS=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -cM ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end')
 
-            if [ "$(find "${GMINER_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${GMINER_LOG_FILE}" ]; then
-                process_gminer_log
+            if [ -f "${RUNNING_FLAG}" ]; then
+                process_gminer_api
+                process_trex_api
+                process_lolminer_api
+
+                patch_stats
             fi
-
-            if [ "$(find "${TREX_LOG_FILE}" -mmin -2 -type f -print 2>/dev/null)" == "${TREX_LOG_FILE}" ]; then
-                process_trex_log
-            fi
-
-            process_lolminer_api
-
-            patch_stats
         else
             sleep 1
         fi

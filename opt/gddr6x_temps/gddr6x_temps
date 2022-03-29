@@ -63,14 +63,8 @@ function process_lolminer_api() {
 }
 
 function patch_stats() {
-    if [ "${MEMORY_TEMPS}" != "" ] && [ "${MEMORY_TEMPS}" != "[]" ]; then
-        ORIG_GPU_STATS=$(cat ${GPU_STATS_JSON})
-        if [ "${ORIG_GPU_STATS}" != "" ]; then
-            local temp=$(cat "${GPU_STATS_JSON}" | jq -ceM ".mtemp = ${MEMORY_TEMPS}")
-            if [ $? -eq 0 ]; then
-                echo $temp > ${GPU_STATS_JSON}
-            fi
-        fi
+    if [ "${MEMORY_TEMPS}" != "" ] && [ "${MEMORY_TEMPS}" != "[]" ] && jq -ceM "." <<< "${MEMORY_TEMPS}"; then
+        cat <<< $(jq -ceM ".mtemp = ${MEMORY_TEMPS}" "${GPU_STATS_JSON}") > "${GPU_STATS_JSON}"
     fi
 }
 

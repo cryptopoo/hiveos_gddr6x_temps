@@ -57,9 +57,12 @@ curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-
 ```
 
 # In case of problems / Uninstall instructions
-What if after installing this script you start seeing aliens coming all the way down to mother Earth to rape your wife and steal your children?
+If you face any problems, please create an issue here on github so that I can be aware of it and we can work out together a solution.
 
-First, you can uninstall the script with (copy paste the whole thing and press ENTER):
+Additionally, you may try the unstable version as well (explained above). This version may contain enhancement that are not yet finalized or currently being tested.
+
+
+You can uninstall the script with (copy paste the whole thing and press ENTER):
 
 ```
 curl https://raw.githubusercontent.com/cryptopoo/hiveos_gddr6x_temps/main/quick-uninstall.sh | bash

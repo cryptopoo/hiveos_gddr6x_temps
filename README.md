@@ -32,7 +32,7 @@ BIOS 94.04.38.00.F0 (MSI RTX 3060 Ti 8GB Gaming X TRIO)
 Please consider this a simple add-on on top of HiveOS.
 What it really does, is parsing the logs from the miners written above and patching the GPU stats json file that HiveOS collects periodically with the memory temperatures. When GPU data will be reported to HiveOS, it will have also memory temperatures added to it.
 
-# Installation stable version (last release 2022-03-30 01:12 UTC)
+# Installation stable version (latest release 2022-03-31 04:44 UTC)
 Simply open a shell on your HiveOS installation or click "Run command" on top and run (copy paste the whole thing and press ENTER):
 
 ```

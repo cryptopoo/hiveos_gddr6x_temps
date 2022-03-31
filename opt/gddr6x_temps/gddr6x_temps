@@ -15,7 +15,7 @@ LOLMINER_API_URL="http://127.0.0.1:44444/summary"
 
 function init() {
     nvidia_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '[ .brand | to_entries[] | select(.value == "nvidia") | .key ]')
-    gpus_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '[ .brand | to_entries[] | select(.value != "cpu") | .key ]')
+    bus_indexes_array=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -c '.busids')
     if [ "${nvidia_indexes_array}" == "" ] || [ "${nvidia_indexes_array}" == "[]" ]; then
         exit 1
     fi
@@ -23,16 +23,15 @@ function init() {
 
 function process_stats() {
     local stats="$1"
-    local gpus_array="$2"
 
-    if [ "${stats}" == "" ] || [ "${gpus_array}" == "" ]; then
+    if [ "${stats}" == "" ]; then
         return 1
     fi
 
     for x in ${stats}; do
-        local k=$(echo ${gpus_array} | jq -c ".[${x%%,*}]")
+        local k=$(echo ${bus_indexes_array} | jq -c "index(\"${x%%,*}\")")
         local v=${x#*,}
-        if [ "${k}" != "null" ] && [ -n "${k}" ]; then
+        if [ -n "${k}" ] && [ -n "${v}" ] && [ "${v}" != "0" ]; then
             local temp=$(jq -ceM ".[${k}] = \"${v}\"" <<< "${MEMORY_TEMPS}")
 
             if [ $? -eq 0 ]; then
@@ -45,21 +44,21 @@ function process_stats() {
 }
 
 function process_gminer_api() {
-    local stats=$(curl -s "${GMINER_API_URL}" | jq -c ' .devices| to_entries[] | select(.value.memory_temperature) | [(.value.gpu_id|tostring), (.value.memory_temperature|tostring)] | join(",")' | tr -d '"')
+    local stats=$(curl -m 1 -s "${GMINER_API_URL}" | jq -c ' .devices| to_entries[] | select(.value.memory_temperature) | [(.value.bus_id|capture("....:(?<busid>.*)").busid|tostring), (.value.memory_temperature|tostring)] | join(",")' | tr -d '"')
 
-    process_stats "${stats}" "${gpus_indexes_array}"
+    process_stats "${stats}"
 }
 
 function process_trex_api() {
-    local stats=$(curl -s "${TREX_API_URL}" | jq -c ' .gpus| to_entries[] | select(.value.memory_temperature) | [(.value.gpu_id|tostring), (.value.memory_temperature|tostring)] | join(",")' | tr -d '"')
+    local stats=$(curl -m 1 -s "${TREX_API_URL}" | jq -c ' .gpus| to_entries[] | select(.value.memory_temperature) | [(.value.pci_bus|tostring), (.value.memory_temperature|tostring)] | join(" ")' | tr -d '"' | xargs -n2 printf '%.2x:00.0,%d\n')
 
-    process_stats "${stats}" "${nvidia_indexes_array}"
+    process_stats "${stats}"
 }
 
 function process_lolminer_api() {
-    local stats=$(curl -s "${LOLMINER_API_URL}" | jq -c ' .Workers | to_entries[] | select(.value.Mem_Temp) | [(.value.Index|tostring), (.value.Mem_Temp|tostring)] | join(",")' | tr -d '"')
+    local stats=$(curl -m 1 -s "${LOLMINER_API_URL}" | jq -c ' .Workers | to_entries[] | select(.value.Mem_Temp) | [(.value.PCIE_Address|capture("(?<busid>.*):0").busid|tostring), (.value.Mem_Temp|tostring)] | join(" ")' | tr -d '"' | xargs -n2 printf '%.2x:00.0,%d\n')
 
-    process_stats "${stats}" "${gpus_indexes_array}"
+    process_stats "${stats}"
 }
 
 function patch_stats() {
@@ -76,7 +75,7 @@ function loop() {
                 MEMORY_TEMPS=$(cat "${GPU_STATS_JSON}" 2>/dev/null | jq -cM ' . | if has("mtemp") then .mtemp else (.temp | .[]=0) end')
 
                 # Tricking the agent so it will wait a bit more for us to be done, not really 3 seconds anyway ;)
-                touch -d "3 seconds ago" ${GPU_STATS_JSON}
+                touch -d "5 seconds ago" ${GPU_STATS_JSON}
 
                 if [ -s "${CUR_MINER}" ]; then
                     while read miner; do

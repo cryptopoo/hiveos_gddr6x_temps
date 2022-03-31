@@ -28,7 +28,7 @@ BIOS 94.04.38.00.F0 (MSI RTX 3060 Ti 8GB Gaming X TRIO)
 - RTX A4500 (GDDR6)
 - RTX A5000 (GDDR6)
 
-# This is experimental
+# No HiveOS modifications needed
 Please consider this a simple add-on on top of HiveOS.
 What it really does, is parsing the logs from the miners written above and patching the GPU stats json file that HiveOS collects periodically with the memory temperatures. When GPU data will be reported to HiveOS, it will have also memory temperatures added to it.
 

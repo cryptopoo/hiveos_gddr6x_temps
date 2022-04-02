@@ -1,4 +1,6 @@
 # HiveOS GDDR6X Temperatures for NVIDIA GPUs
+#### For HiveOS versions BELOW 0.6-214@220331
+##
 
 This simple script reads temperatures from NVIDIA GPUs as reported by:
 
